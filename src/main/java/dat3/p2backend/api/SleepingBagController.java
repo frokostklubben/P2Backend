@@ -3,6 +3,7 @@ package dat3.p2backend.api;
 import dat3.p2backend.dto.SleepingBagRequest;
 import dat3.p2backend.dto.SleepingBagResponse;
 import dat3.p2backend.service.SleepingBagService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
