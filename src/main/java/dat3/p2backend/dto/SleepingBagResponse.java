@@ -1,5 +1,6 @@
 package dat3.p2backend.dto;
 
+import dat3.p2backend.entity.ImageLink;
 import dat3.p2backend.entity.SleepingBag;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +20,9 @@ public class SleepingBagResponse {
   Integer productWeight;
   String stockLocation;
   String note;
+  String imageURL;
 
-  public SleepingBagResponse(SleepingBag sleepingBag) {
+  public SleepingBagResponse(SleepingBag sleepingBag, String imageURL) {
     this.sku = sleepingBag.getSku();
     this.brand = sleepingBag.getBrand();
     this.model = sleepingBag.getModel();
@@ -32,6 +34,7 @@ public class SleepingBagResponse {
     this.productWeight = sleepingBag.getProductWeight();
     this.stockLocation = sleepingBag.getStockLocation();
     this.note = sleepingBag.getNote();
+    this.imageURL = imageURL;
   }
 
 

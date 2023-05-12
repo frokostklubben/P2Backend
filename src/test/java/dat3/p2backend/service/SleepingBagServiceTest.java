@@ -5,6 +5,7 @@ import dat3.p2backend.dto.SleepingBagRequest;
 import dat3.p2backend.dto.SleepingBagResponse;
 import dat3.p2backend.entity.SleepingBag;
 import dat3.p2backend.entity.SleepingBagExternal;
+import dat3.p2backend.repository.ImageLinkRepository;
 import dat3.p2backend.repository.SleepingBagExternalRepository;
 import dat3.p2backend.repository.SleepingBagRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +27,10 @@ class SleepingBagServiceTest {
   @Autowired
   SleepingBagExternalRepository sleepingBagExternalRepository;
 
-  SleepingBagService sleepingBagService;
+  @Autowired
+  ImageLinkRepository imageLinkRepository;
 
+  SleepingBagService sleepingBagService;
 
   DeveloperData developerData;
 
@@ -35,7 +38,7 @@ class SleepingBagServiceTest {
 
   @Test
   void getSleepingBags() {
-    developerData = new DeveloperData(sleepingBagRepository, sleepingBagExternalRepository);
+    developerData = new DeveloperData(sleepingBagRepository, sleepingBagExternalRepository, imageLinkRepository);
     developerData.importData();
 
     SleepingBagRequest sleepingBagRequest = new SleepingBagRequest();
@@ -46,7 +49,7 @@ class SleepingBagServiceTest {
     sleepingBagRequest.setMaxCost(3500.0);
     sleepingBagRequest.setInnerMaterial("Dun");
 
-    sleepingBagService = new SleepingBagService(sleepingBagRepository);
+    sleepingBagService = new SleepingBagService(sleepingBagRepository, imageLinkRepository);
 
     List<SleepingBagResponse> sleepingBagResponses = sleepingBagService.getSleepingBags(sleepingBagRequest);
 

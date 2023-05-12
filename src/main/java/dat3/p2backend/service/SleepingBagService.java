@@ -2,7 +2,9 @@ package dat3.p2backend.service;
 
 import dat3.p2backend.dto.SleepingBagRequest;
 import dat3.p2backend.dto.SleepingBagResponse;
+import dat3.p2backend.entity.ImageLink;
 import dat3.p2backend.entity.SleepingBag;
+import dat3.p2backend.repository.ImageLinkRepository;
 import dat3.p2backend.repository.SleepingBagRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,11 @@ import java.util.function.Predicate;
 public class SleepingBagService {
     SleepingBagRepository sleepingBagRepository;
 
-    public SleepingBagService(SleepingBagRepository sleepingBagRepository) {
+    ImageLinkRepository imageLinkRepository;
+
+    public SleepingBagService(SleepingBagRepository sleepingBagRepository, ImageLinkRepository imageLinkRepository) {
         this.sleepingBagRepository = sleepingBagRepository;
+        this.imageLinkRepository = imageLinkRepository;
     }
 
 
@@ -37,13 +42,26 @@ public class SleepingBagService {
       List<SleepingBagResponse> sleepingBagsresult = sleepingBags.stream()
           .sorted(Comparator.comparing(SleepingBag::getModel).thenComparing(SleepingBag::getPersonHeight))
           .filter(distinctByKey(SleepingBag::getModel))
-          .map(SleepingBagResponse::new)
+          .map(sleepingBag -> new SleepingBagResponse(sleepingBag, findImageURL(sleepingBag)))
           .toList();
       return sleepingBagsresult;
     }
-    return sleepingBags.stream().map(SleepingBagResponse::new).toList();
 
+    return sleepingBags.stream()
+            .map(sleepingBag -> new SleepingBagResponse(sleepingBag, findImageURL(sleepingBag)))
+            .toList();
 
+  }
+
+  private String findImageURL(SleepingBag sleepingBag) {
+      Optional<ImageLink> imageLink = imageLinkRepository.findById(sleepingBag.getSku());
+
+      if (imageLink.isPresent()) {
+          return imageLink.get().getImageURL();
+      }
+      else {
+          return "https://cdn.fotoagent.dk/accumolo/production/themes/friluftsland_2021/images/noimage_1_small.jpg";
+      }
   }
 
   private boolean filterByStockLocation(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
@@ -94,12 +112,6 @@ public class SleepingBagService {
       }
       return true;
   }
-
-    public SleepingBagResponse getSleepingBagBySku(Integer sku) {
-        SleepingBag sleepingBag = sleepingBagRepository.findById(sku).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Sleeping bag not found"));
-        return new SleepingBagResponse(sleepingBag);
-    }
 
     // Taget fra Stack overflow
     // https://stackoverflow.com/questions/23699371/java-8-distinct-by-property
