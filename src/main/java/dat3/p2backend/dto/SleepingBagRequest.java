@@ -15,5 +15,6 @@ public class SleepingBagRequest {
   Double minCost;
   Double maxCost;
   String innerMaterial;
+  Boolean isInStore;
 
 }
