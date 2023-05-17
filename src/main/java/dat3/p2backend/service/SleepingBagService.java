@@ -53,7 +53,7 @@ public class SleepingBagService {
 
   }
 
-  private String findImageURL(SleepingBag sleepingBag) {
+  String findImageURL(SleepingBag sleepingBag) {
       Optional<ImageLink> imageLink = imageLinkRepository.findById(sleepingBag.getSku());
 
       if (imageLink.isPresent()) {
@@ -64,7 +64,7 @@ public class SleepingBagService {
       }
   }
 
-  private boolean filterByStockLocation(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
+  boolean filterByStockLocation(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
 
       if (sleepingBagRequest.getIsInStore() != null){
 
@@ -74,33 +74,37 @@ public class SleepingBagService {
       return true;
   }
 
-  private boolean filterByTemperature(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
+  boolean filterByTemperature(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
     if (sleepingBagRequest.getIsColdSensitive() == null || sleepingBagRequest.getIsColdSensitive()) {
-      return sleepingBagRequest.getEnvironmentTemperatureMin() == null || sleepingBag.getComfortTemp() <= sleepingBagRequest.getEnvironmentTemperatureMin();
+      return sleepingBagRequest.getEnvironmentTemperatureMin() == null
+          || sleepingBag.getComfortTemp() <= sleepingBagRequest.getEnvironmentTemperatureMin()
+          && (sleepingBag.getComfortTemp()-sleepingBagRequest.getEnvironmentTemperatureMin())*-1 <= 5;
     } else {
-      return sleepingBagRequest.getEnvironmentTemperatureMin() == null || sleepingBag.getLowerLimitTemp() <= sleepingBagRequest.getEnvironmentTemperatureMin();
+      return sleepingBagRequest.getEnvironmentTemperatureMin() == null
+          || sleepingBag.getLowerLimitTemp() <= sleepingBagRequest.getEnvironmentTemperatureMin()
+          && (sleepingBag.getLowerLimitTemp() - sleepingBagRequest.getEnvironmentTemperatureMin()) * -1 <= 5;
     }
   }
 
-  private boolean filterByCost(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
+  boolean filterByCost(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
     return sleepingBagRequest.getMaxCost() == null || sleepingBagRequest.getMinCost() == null || sleepingBag.getCost() >= sleepingBagRequest.getMinCost() &&
         sleepingBag.getCost() <= sleepingBagRequest.getMaxCost();
   }
 
-  private boolean filterByInnerMaterial(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
+  boolean filterByInnerMaterial(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
     return sleepingBagRequest.getInnerMaterial() == null || sleepingBag.getInnerMaterial().equals(sleepingBagRequest.getInnerMaterial());
   }
 
-  private boolean filterByPersonHeight(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
+  boolean filterByPersonHeight(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
 
       if (sleepingBagRequest.getPersonHeight() != null) {
-        return (sleepingBag.getPersonHeight() >= sleepingBagRequest.getPersonHeight()) &&
-            (sleepingBag.getPersonHeight() - sleepingBagRequest.getPersonHeight() <= 15);
+        return (sleepingBag.getPersonHeight() >= sleepingBagRequest.getPersonHeight())
+            && (sleepingBag.getPersonHeight() - sleepingBagRequest.getPersonHeight() <= 19);
       }
     return true;
   }
 
-  private boolean filterByGender(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
+  boolean filterByGender(SleepingBag sleepingBag, SleepingBagRequest sleepingBagRequest) {
 
       if(sleepingBagRequest.getIsFemale() != null){
 

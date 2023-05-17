@@ -1,13 +1,20 @@
 package dat3.p2backend.config;
 
 import dat3.p2backend.entity.ImageLink;
+import dat3.p2backend.entity.Member;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import dat3.p2backend.entity.SleepingBag;
 import dat3.p2backend.entity.SleepingBagExternal;
 import dat3.p2backend.repository.ImageLinkRepository;
 import dat3.p2backend.repository.SleepingBagExternalRepository;
 import dat3.p2backend.repository.SleepingBagRepository;
+import dat3.security.dto.UserWithRolesResponse;
+import dat3.security.entity.Role;
+import dat3.security.entity.UserWithRoles;
+import dat3.security.repository.UserWithRolesRepository;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.io.*;
@@ -21,15 +28,25 @@ public class DeveloperData implements CommandLineRunner {
     SleepingBagExternalRepository sleepingBagExternalRepository;
     ImageLinkRepository imageLinkRepository;
 
+    PasswordEncoder passwordEncoder;
+
+    @Autowired
+    UserWithRolesRepository userWithRolesRepository;
+
     public DeveloperData(SleepingBagRepository sleepingBagRepository, SleepingBagExternalRepository sleepingBagExternalRepository,
-                         ImageLinkRepository imageLinkRepository) {
+                         ImageLinkRepository imageLinkRepository, PasswordEncoder passwordEncoder) {
         this.sleepingBagRepository = sleepingBagRepository;
         this.sleepingBagExternalRepository = sleepingBagExternalRepository;
         this.imageLinkRepository = imageLinkRepository;
+        this.passwordEncoder = passwordEncoder;
     }
+
+
+
 
     @Override
     public void run(String... args) throws Exception {
+        setupUserWithRoleUsers();
         readImagesFromFile();
         importData();
     }
@@ -115,6 +132,20 @@ public class DeveloperData implements CommandLineRunner {
         }
 
     }
+
+    private void setupUserWithRoleUsers() {
+
+        String passwordUsedByAll = "test12";
+
+
+        String pw = passwordEncoder.encode(passwordUsedByAll);
+        UserWithRoles userWithRoles1 = new UserWithRoles("user1", pw, "user1@a.dk");
+            userWithRoles1.addRole(Role.USER);
+            userWithRolesRepository.save(userWithRoles1);
+
+
+    }
+
 }
 
 
